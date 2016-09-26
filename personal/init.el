@@ -10,6 +10,9 @@
 (setq-default js2-enter-indents-newline t)
 (setq-default js2-indent-on-enter-key t)
 (setq-default js2-mode-indent-ignore-first-tab t)
+(setq-default js2-indent-switch-body t)
+(setq-default js2-show-parse-errors nil)
+(setq-default js2-strict-trailing-comma-warning nil)
 
 ;; adjust indents for web-mode to 2 spaces
 (defun my-web-mode-hook ()
@@ -27,10 +30,11 @@
 ;;disable jshint
 (setq-default flycheck-disabled-checkers
               (append flycheck-disabled-checkers
-                      '(javascript-jshint)))
+                      '(javascript-jslint)))
 
 ;; use eslint with web-mode for jsx files
 (flycheck-add-mode 'javascript-eslint 'web-mode)
+
 
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
