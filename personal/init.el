@@ -66,4 +66,7 @@
 
 (add-hook 'flycheck-mode-hook #'curtis/use-node-module-eslint)
 
+;; load external files
+(load "~/.emacs.d/personal/goto-line-with-feedback.el")
+
 ;;; init.el ends here
