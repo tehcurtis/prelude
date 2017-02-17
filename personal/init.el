@@ -2,6 +2,10 @@
 
 (load-theme 'material t)
 
+(require 'magithub)
+(require 'rvm)
+(rvm-use-default)
+
 (setq whitespace-line-column 120)
 
 (setq-default js2-basic-offset 2)
@@ -13,6 +17,7 @@
 (setq-default js2-indent-switch-body t)
 (setq-default js2-show-parse-errors nil)
 (setq-default js2-strict-trailing-comma-warning nil)
+(setq-default js-switch-indent-offset 2)
 
 ;; adjust indents for web-mode to 2 spaces
 (defun my-web-mode-hook ()
@@ -65,6 +70,7 @@
       (setq-local flycheck-javascript-eslint-executable eslint))))
 
 (add-hook 'flycheck-mode-hook #'curtis/use-node-module-eslint)
+(setq flycheck-ruby-rubocop-executable "rubocop")
 
 ;; load external files
 (load "~/.emacs.d/personal/goto-line-with-feedback.el")
