@@ -1,10 +1,10 @@
 (disable-theme 'zenburn)
 
-(load-theme 'material t)
+(load-theme 'night-owl t)
 
-(require 'magithub)
-(require 'rvm)
-(rvm-use-default)
+(add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
+(require 'rbenv)
+(rbenv-use-corresponding)
 
 (setq whitespace-line-column 120)
 
@@ -28,18 +28,86 @@
   (setq web-mode-code-indent-offset 2))
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
+;; (setq prettier-js-args '(
+;;                          "--single-quote" "true"
+;;                          "--trailing-comma" "all"
+;;                          ))
+
 ;; further web-mode setup
+;; (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+;; ;; for better jsx syntax-highlighting in web-mode
+;; ;; - courtesy of Patrick @halbtuerke
+;; (defadvice web-mode-highlight-part (around tweak-jsx activate)
+;;   (if (equal web-mode-content-type "jsx")
+;;       (let ((web-mode-enable-part-face nil))
+;;         ad-do-it)
+;;     ad-do-it))
+
+;; (require 'flycheck)
+
+;; ;;disable jshint
+;; (setq-default flycheck-disabled-checkers
+;;               (append flycheck-disabled-checkers
+;;                       '(javascript-jslint)))
+
+;; use eslint with web-mode for jsx files
+;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+
+;; customize flycheck temp file prefix
+(setq-default flycheck-temp-prefix ".flycheck")
+
+;; disable json-jsonlist checking for json files
+;; (setq-default flycheck-disabled-checkers
+;;               (append flycheck-disabled-checkers
+;;                       '(json-jsonlist)))
+
+;; (setq flycheck-ruby-rubocop-executable "rubocop")
+;; (add-to-list 'flycheck-checkers 'd-ldc)
+
+
+
+
+
+
+
+
+
+;; use node-modules
+;; (eval-after-load 'js-mode
+;;   '(add-hook 'js-mode-hook #'add-node-modules-path))
+;; ;; use web-mode for .jsx files
+;; (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+;; ;; http://www.flycheck.org/manual/latest/index.html
+;; (require 'flycheck)
+;; ;; turn on flychecking globally
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
+;; ;; disable json-jsonlist checking for json files
+;; (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers '(json-jsonlist)))
+;; ;; disable jshint since we prefer eslint checking
+;; (setq-default flycheck-disabled-checkers (append flycheck-disabled-checkers '(javascript-jshint)))
+;; ;; use eslint with web-mode for jsx files
+;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+
+
+
+;; use web-mode for .jsx files
 (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
+
+;; http://www.flycheck.org/manual/latest/index.html
 (require 'flycheck)
 
-;;disable jshint
+;; turn on flychecking globally
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+;; disable jshint since we prefer eslint checking
 (setq-default flycheck-disabled-checkers
               (append flycheck-disabled-checkers
-                      '(javascript-jslint)))
+                      '(javascript-jshint)))
 
 ;; use eslint with web-mode for jsx files
 (flycheck-add-mode 'javascript-eslint 'web-mode)
-
 
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
@@ -49,17 +117,15 @@
               (append flycheck-disabled-checkers
                       '(json-jsonlist)))
 
-;; for better jsx syntax-highlighting in web-mode
-;; - courtesy of Patrick @halbtuerke
-(defadvice web-mode-highlight-part (around tweak-jsx activate)
-  (if (equal web-mode-content-type "jsx")
-      (let ((web-mode-enable-part-face nil))
-        ad-do-it)
-    ad-do-it))
+;; https://github.com/purcell/exec-path-from-shell
+;; only need exec-path-from-shell on OSX
+;; this hopefully sets up path and other vars better
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
-;; function for configuring flycheck to use the project-installed
-;; eslit, not a globally configured one
-(defun curtis/use-node-module-eslint ()
+;; use local eslint from node_modules before global
+;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+(defun my/use-eslint-from-node-modules ()
   (let* ((root (locate-dominating-file
                 (or (buffer-file-name) default-directory)
                 "node_modules"))
@@ -68,11 +134,29 @@
                                         root))))
     (when (and eslint (file-executable-p eslint))
       (setq-local flycheck-javascript-eslint-executable eslint))))
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
-(add-hook 'flycheck-mode-hook #'curtis/use-node-module-eslint)
-(setq flycheck-ruby-rubocop-executable "rubocop")
+;; for better jsx syntax-highlighting in web-mode
+;; - courtesy of Patrick @halbtuerke
+(defadvice web-mode-highlight-part (around tweak-jsx activate)
+  (if (equal web-mode-content-type "jsx")
+      (let ((web-mode-enable-part-face nil))
+        ad-do-it)
+    ad-do-it))
+
 
 ;; load external files
 (load "~/.emacs.d/personal/goto-line-with-feedback.el")
+
+(require 'prettier-js)
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+(eval-after-load 'web-mode
+  '(progn
+     (add-hook 'web-mode-hook #'add-node-modules-path)
+     (add-hook 'web-mode-hook #'prettier-js-mode)))
+(eval-after-load 'js2-mode
+  '(progn
+     (add-hook 'web-mode-hook #'add-node-modules-path)
+     (add-hook 'web-mode-hook #'prettier-js-mode)))
 
 ;;; init.el ends here
