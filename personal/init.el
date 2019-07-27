@@ -2,10 +2,6 @@
 
 (load-theme 'night-owl t)
 
-(add-to-list 'load-path (expand-file-name "/path/to/rbenv.el/"))
-(require 'rbenv)
-(rbenv-use-corresponding)
-
 (setq whitespace-line-column 120)
 
 (setq-default js2-basic-offset 2)
@@ -18,6 +14,10 @@
 (setq-default js2-show-parse-errors nil)
 (setq-default js2-strict-trailing-comma-warning nil)
 (setq-default js-switch-indent-offset 2)
+
+;; for mah rubies
+(require 'rbenv)
+(global-rbenv-mode)
 
 ;; adjust indents for web-mode to 2 spaces
 (defun my-web-mode-hook ()
