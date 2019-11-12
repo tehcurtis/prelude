@@ -159,4 +159,10 @@
      (add-hook 'web-mode-hook #'add-node-modules-path)
      (add-hook 'web-mode-hook #'prettier-js-mode)))
 
+;; ivy config
+
+(setq ivy-re-builders-alist
+      '((swiper . regexp-quote)
+        (t      . ivy--regex-fuzzy)))
+
 ;;; init.el ends here
